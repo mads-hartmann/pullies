@@ -1,0 +1,15 @@
+(jbuild_version 1)
+
+(executable
+ ((public_name pullies)
+  (name Main)
+
+  (libraries (
+    core
+    async
+    str
+    yojson
+    cohttp
+    cohttp.lwt
+  ))
+ ))
