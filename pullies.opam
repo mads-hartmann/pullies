@@ -1,8 +1,14 @@
 opam-version: "1.2"
+
 name: "pullies"
 version: "0.1"
 maintainer: "Mads Hartmann <mads379@gmail.com>"
 author: "Mads Hartmann <mads379@gmail.com>"
+
+homepage: "https://github.com/mads-hartmann/pullies"
+dev-repo: "https://github.com/mads-hartmann/pullies.git"
+bug-reports: "https://github.com/mads-hartmann/pullies/issues"
+
 build: [make]
 install: [make "install"]
 remove: [make "distclean"]
