@@ -4,13 +4,42 @@ open Cohttp;
 
 open Cohttp_lwt_unix;
 
+module ReviewState = {
+  type t =
+    | Pending
+    | Commented
+    | Approved
+    | ChangesRequested
+    | Dismissed
+    | UnknownState;
+  let to_emoji (state: t) :string =>
+    switch state {
+    | Pending => "\226\143\177"
+    | Commented => "\240\159\146\172"
+    | Approved => "\240\159\154\128"
+    | ChangesRequested => "\240\159\146\133"
+    | Dismissed => "\240\159\154\171"
+    | UnknownState => "\226\157\147"
+    };
+  let of_string (str: string) :t =>
+    switch str {
+    | "PENDING" => Pending
+    | "COMMENTED" => Commented
+    | "APPROVED" => Approved
+    | "CHANGES_REQUESTED" => ChangesRequested
+    | "DISMISSED" => Dismissed
+    | _ => UnknownState
+    };
+};
+
 module PullRequest = {
   type t = {
     title: string,
     url: string,
     updated_at: Core.Time.t,
     reviewers: list string,
-    author: string
+    author: string,
+    latest_state: option ReviewState.t
   };
   let of_json (json: Yojson.Basic.json) :t => {
     open Yojson.Basic.Util;
@@ -19,13 +48,24 @@ module PullRequest = {
     let updated_at =
       json |> member "updatedAt" |> to_string |> Core.Time.of_string;
     let author = json |> member "author" |> member "login" |> to_string;
+    let latest_state =
+      json
+      |> member "reviews"
+      |> member "nodes"
+      |> to_list
+      |> Core.List.hd
+      |> Core.Option.map
+           f::(
+             fun json =>
+               ReviewState.of_string (json |> member "state" |> to_string)
+           );
     let reviewers =
       json
       |> member "reviewRequests"
       |> member "nodes"
       |> to_list
       |> List.map (fun n => member "reviewer" n |> member "login" |> to_string);
-    {title, url, reviewers, updated_at, author}
+    {title, url, reviewers, updated_at, author, latest_state}
   };
 };
 
@@ -52,6 +92,15 @@ let query =
         login
       }
       id
+      reviews(last: 1) {
+        nodes {
+          submittedAt
+          author {
+            login
+          }
+          state
+        }
+      }
     }
 
     query pullrequests {

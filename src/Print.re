@@ -26,7 +26,8 @@ let pullrequests title (pullrequests: list Github.PullRequest.t) => {
   print_endline (Printf.sprintf "You have %d pull prequests:\n" count);
   print_endline (
     Printf.sprintf
-      "%s\t%s\t%s\t%s"
+      "%s\t%s\t%s\t%s\t%s"
+      "State"
       (pad "Last update" 19)
       (pad "Author" longest_author)
       (pad "Title" longest_title)
@@ -37,7 +38,13 @@ let pullrequests title (pullrequests: list Github.PullRequest.t) => {
        fun pr =>
          print_endline (
            Printf.sprintf
-             "%s\t%s\t%s\t%s"
+             "%s\t%s\t%s\t%s\t%s"
+             (
+               pr.latest_state
+               |> Core.Option.fold
+                    init::"\226\143\177"
+                    f::(fun _ x => Github.ReviewState.to_emoji x)
+             )
              (Core.Time.format pr.updated_at "%F %T" zone::tz)
              (pad pr.author longest_author)
              (pad pr.title longest_title)
