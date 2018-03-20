@@ -12,12 +12,24 @@ let pad str wanted_length =>
     str
     (String.init (wanted_length - String.length str) (fun _ => ' '));
 
+
+/**
+ * Pretty print the timestamp since now.
+ */
+let since (timestamp: Core.Time.t) => {
+  let parts =
+    Core.Time.diff (Core.Time.now ()) timestamp
+    |> Core.Time.Span.to_parts;
+         Printf.sprintf "%d days" Core.Time.Span.Parts.(days parts);
+  ()
+};
+
 let max xs => List.fold_left (fun max s => s > max ? s : max) 0 xs;
 
 let pullrequests title (pullrequests: list Github.PullRequest.t) => {
   open Github.PullRequest;
   let count = List.length pullrequests;
-  let tz = Core.Time.Zone.of_string "Europe/Copenhagen";
+  /* let tz = Core.Time.Zone.of_string "Europe/Copenhagen"; */
   let longest_author =
     pullrequests |> List.map (fun pr => String.length pr.author) |> max;
   let longest_title =
@@ -45,7 +57,7 @@ let pullrequests title (pullrequests: list Github.PullRequest.t) => {
                     init::"\226\143\177"
                     f::(fun _ x => Github.ReviewState.to_emoji x)
              )
-             (Core.Time.format pr.updated_at "%F %T" zone::tz)
+             (since pr.updated_at)
              (pad pr.author longest_author)
              (pad pr.title longest_title)
              pr.url

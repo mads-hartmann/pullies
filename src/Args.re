@@ -1,7 +1,7 @@
 module Commands = {
   type t =
     | Help
-    | PullRequests
+    | List
     | Error Errors.t;
 };
 
@@ -11,6 +11,6 @@ let parse args =>
   | ["help"]
   | ["-h"]
   | ["--help"] => Commands.Help
-  | ["pullrequests"] => Commands.PullRequests
+  | ["ls"] => Commands.List
   | [unknown, ..._] => Commands.Error (Errors.UnknownCommand unknown)
   };

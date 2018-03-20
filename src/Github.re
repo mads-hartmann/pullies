@@ -34,6 +34,7 @@ module ReviewState = {
 
 module PullRequest = {
   type t = {
+    id: string,
     title: string,
     url: string,
     updated_at: Core.Time.t,
@@ -43,6 +44,7 @@ module PullRequest = {
   };
   let of_json (json: Yojson.Basic.json) :t => {
     open Yojson.Basic.Util;
+    let id = json |> member "id" |> to_string;
     let title = json |> member "title" |> to_string;
     let url = json |> member "url" |> to_string;
     let updated_at =
@@ -65,7 +67,7 @@ module PullRequest = {
       |> member "nodes"
       |> to_list
       |> List.map (fun n => member "reviewer" n |> member "login" |> to_string);
-    {title, url, reviewers, updated_at, author, latest_state}
+    {id, title, url, reviewers, updated_at, author, latest_state}
   };
 };
 

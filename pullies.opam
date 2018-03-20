@@ -11,3 +11,18 @@ bug-reports: "https://github.com/mads-hartmann/pullies/issues"
 build: [make]
 install: [make "install"]
 remove: [make "distclean"]
+
+depends: [
+    "jbuilder"  {build & >="1.0+beta13"}
+    "reason"    {build & ="1.13.7"}
+    "ssl" {build}
+    "tls" {build}
+    "core" {build}
+    "yojson" {build}
+    "async" {build}
+    "lwt" {build}
+    "lwt_ssl" {build}
+    "cohttp" {build}
+    "cohttp-lwt" {build}
+    "cohttp-lwt-unix" {build}
+]

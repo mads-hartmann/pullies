@@ -11,7 +11,7 @@ clean:
 	jbuilder clean
 
 run: build
-	$(executable) pullrequests
+	$(executable) ls
 
 install: build
 	@jbuilder install
@@ -27,8 +27,10 @@ distrib:
 
 publish:
 	topkg publish
-	# topkg opam pkg
-	# topkg opam submit
+	topkg opam pkg
+	topkg opam submit
+
+release: distrib publish
 
 $(executable): $(sources)
 	jbuilder build --dev
